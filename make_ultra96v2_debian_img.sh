@@ -3,6 +3,11 @@
 # ikwzm 氏の debian イメージをパーティーション拡張可能な形で img 化する
 
 
+
+########################################
+# 設定
+########################################
+
 VERSION="2021.1.1"
 TAG="v2021.1.1"
 IMG_FILE="ultra96v2-debian-v2021.1.1.img"
@@ -12,6 +17,10 @@ TGZ_FILE="ZynqMP-FPGA-Linux-${TAG}.tar.gz"
 WORD_DIR=`pwd`
 
 
+########################################
+# イメージ取得(私の OneDriveから)
+########################################
+
 # ZynqMP-FPGA-Linux-v2021.1.1.tar.gz
 if [ ! -f $TGZ_FILE ]; then
 #   wget -O $TGZ_FILE https://github.com/ikwzm/ZynqMP-FPGA-Linux/archive/refs/tags/$TAG.tar.gz
@@ -19,24 +28,34 @@ if [ ! -f $TGZ_FILE ]; then
 fi
 tar zxvf $TGZ_FILE
 
+
+########################################
+# イメージ作成
+########################################
+
 MNT_P1="/mnt/loop_img_p1"
 MNT_P2="/mnt/loop_img_p2"
 
+# 空いてる loop を得る
 DEV_LOOP=`sudo losetup -f`
 
+# 空のイメージを作る
 rm -f $IMG_FILE
 truncate -s 6GiB $IMG_FILE
 
+# パーティーションを作る
 sudo losetup $DEV_LOOP $IMG_FILE
 sudo parted $DEV_LOOP -s mklabel msdos -s mkpart primary fat32 1048576B 315621375B -s mkpart primary ext4 315621376B 100% -s set 1 boot
 sudo mkfs.vfat ${DEV_LOOP}p1
 sudo mkfs.ext4 ${DEV_LOOP}p2
 
+# マウントする
 sudo mkdir -p $MNT_P1
 sudo mkdir -p $MNT_P2
 sudo mount ${DEV_LOOP}p1 $MNT_P1
 sudo mount ${DEV_LOOP}p2 $MNT_P2
 
+# ファイルコピー
 cd ZynqMP-FPGA-Linux-${VERSION}
 sudo cp target/Ultra96-V2/boot/* $MNT_P1
 
@@ -56,12 +75,9 @@ sudo sh -c "cat <<EOT >> $MNT_P2/etc/fstab
 /dev/mmcblk0p1  /mnt/boot   auto    defaults    0   0
 EOT"
 
-
 cd $WORD_DIR
-sudo cp ./boot/*       $MNT_P1
-sudo cp resize2fs_once $MNT_P2/etc/init.d/
-sudo chmod 755         $MNT_P2/etc/init.d/resize2fs_once
 
+# 自動パーティーション拡張を仕込む
 sudo cp setup.sh       $MNT_P2/
 sudo chmod 755         $MNT_P2/setup.sh
 sudo cp resize2fs_once $MNT_P2/etc/init.d/
@@ -77,12 +93,15 @@ sudo mv $MNT_P2/etc/resolv.conf.org $MNT_P2/etc/resolv.conf
 sudo rm $MNT_P2/usr/bin/qemu-aarch64-static
 sudo rm $MNT_P2/setup.sh
 
+# アンマウント前にサイズ表示
 df
 
+# アンマウント
 sync
 sudo umount $MNT_P1
 sudo umount $MNT_P2
 sudo losetup -d $DEV_LOOP
+sync
 
 sudo tmdir -p $MNT_P1
 sudo tmdir -p $MNT_P2

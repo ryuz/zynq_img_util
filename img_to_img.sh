@@ -101,7 +101,7 @@ sudo mv $MNT_P2/etc/resolv.conf.org /mnt/usb2/etc/resolv.conf
 sudo rm $MNT_P2/usr/bin/qemu-aarch64-static
 sudo rm $MNT_P2/setup.sh
 
-# サイズ表示
+# アンマウント前にサイズ表示
 df
 
 # アンマウント
