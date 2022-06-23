@@ -103,5 +103,5 @@ sudo umount $MNT_P2
 sudo losetup -d $DEV_LOOP
 sync
 
-sudo rmdir -p $MNT_P1
-sudo rmdir -p $MNT_P2
+sudo rmdir $MNT_P1
+sudo rmdir $MNT_P2
