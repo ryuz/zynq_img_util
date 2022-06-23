@@ -7,7 +7,11 @@
 
 ## スクリプト
 
-- make_ultra96v2_debian_img.sh ikwzm 氏の debian イメージをパーティーション拡張可能な形で img 化する
-- sd_to_img.sh 既存SDを tgz にバックアップ
-- img_to_img.sh dd 等で保存した img をパーティーション拡張可能な形で再 img 化する
+- make_ultra96v2_debian_img.sh ikwzm 氏の
+  - debian イメージをパーティーション拡張可能な形で img 化する
+- sd_to_img.sh
+  -  既存SDを tgz にバックアップ
+- img_to_img.sh
+  -  dd 等で保存した img をパーティーション拡張可能な形で再 img 化する
+
 
