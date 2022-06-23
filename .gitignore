@@ -2,3 +2,6 @@
 *.tar
 *.tar.gz
 *.img
+
+ZynqMP-FPGA-Linux-*/
+

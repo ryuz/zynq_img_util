@@ -9,6 +9,9 @@ IMG_FILE="ultra96v2-debian-v2021.1.1.img"
 
 TGZ_FILE="ZynqMP-FPGA-Linux-${TAG}.tar.gz"
 
+WORD_DIR=`pwd`
+
+
 # ZynqMP-FPGA-Linux-v2021.1.1.tar.gz
 if [ ! -f $TGZ_FILE ]; then
 #   wget -O $TGZ_FILE https://github.com/ikwzm/ZynqMP-FPGA-Linux/archive/refs/tags/$TAG.tar.gz
@@ -54,41 +57,32 @@ sudo sh -c "cat <<EOT >> $MNT_P2/etc/fstab
 EOT"
 
 
-
 cd $WORD_DIR
-sudo cp ./boot/*       /mnt/usb1
-sudo cp resize2fs_once /mnt/usb2/etc/init.d/
-sudo chmod 755         /mnt/usb2/etc/init.d/resize2fs_once
+sudo cp ./boot/*       $MNT_P1
+sudo cp resize2fs_once $MNT_P2/etc/init.d/
+sudo chmod 755         $MNT_P2/etc/init.d/resize2fs_once
 
-sudo cp setup.sh       /mnt/usb2/
-sudo chmod 755         /mnt/usb2/setup.sh
-sudo cp resize2fs_once /mnt/usb2/etc/init.d/
-sudo chmod 755         /mnt/usb2/etc/init.d/resize2fs_once
+sudo cp setup.sh       $MNT_P2/
+sudo chmod 755         $MNT_P2/setup.sh
+sudo cp resize2fs_once $MNT_P2/etc/init.d/
+sudo chmod 755         $MNT_P2/etc/init.d/resize2fs_once
 
-sudo mv /mnt/usb2/etc/resolv.conf    /mnt/usb2/etc/resolv.conf.org
-sudo cp /etc/resolv.conf             /mnt/usb2/etc
-sudo cp /usr/bin/qemu-aarch64-static /mnt/usb2/usr/bin
+sudo mv $MNT_P2/etc/resolv.conf      $MNT_P2/etc/resolv.conf.org
+sudo cp /etc/resolv.conf             $MNT_P2/etc
+sudo cp /usr/bin/qemu-aarch64-static $MNT_P2/usr/bin
 
-sudo chroot /mnt/usb2/ ./setup.sh
+sudo chroot $MNT_P2/ ./setup.sh
 
-sudo mv /mnt/usb2/etc/resolv.conf.org /mnt/usb2/etc/resolv.conf
-sudo rm /mnt/usb2/usr/bin/qemu-aarch64-static
-sudo rm /mnt/usb2/setup.sh
+sudo mv $MNT_P2/etc/resolv.conf.org $MNT_P2/etc/resolv.conf
+sudo rm $MNT_P2/usr/bin/qemu-aarch64-static
+sudo rm $MNT_P2/setup.sh
 
 df
-
-sync
-sudo umount /mnt/usb1
-sudo umount /mnt/usb2
-sudo losetup -d $DEV_LOOP
-
-
 
 sync
 sudo umount $MNT_P1
 sudo umount $MNT_P2
 sudo losetup -d $DEV_LOOP
-sync
 
 sudo tmdir -p $MNT_P1
 sudo tmdir -p $MNT_P2
