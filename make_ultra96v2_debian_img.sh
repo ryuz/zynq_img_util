@@ -49,6 +49,10 @@ sudo parted $DEV_LOOP -s mklabel msdos -s mkpart primary fat32 1048576B 31562137
 sudo mkfs.vfat ${DEV_LOOP}p1
 sudo mkfs.ext4 ${DEV_LOOP}p2
 
+# ボリュームラベル
+sudo fatlabel ${DEV_LOOP}p1 ULTRA96V2
+sudo e2label  ${DEV_LOOP}p2 rootfs
+
 # マウントする
 sudo mkdir -p $MNT_P1
 sudo mkdir -p $MNT_P2
